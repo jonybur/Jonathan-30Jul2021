@@ -1,0 +1,13 @@
+.headerWrapper {
+  display: flex;
+  color: white;
+  justify-content: space-between;
+  padding: 5px 15px;
+  align-items: center;
+  font-size: 12px;
+  color: #545b69;
+
+  .digits {
+    font-family: monospace;
+  }
+}

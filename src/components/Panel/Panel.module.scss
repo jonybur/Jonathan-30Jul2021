@@ -1,0 +1,22 @@
+.table {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.cell {
+  text-align: right;
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 100%;
+  list-style: none;
+  width: 33.33%;
+  padding: 3px 30px 3px 0;
+}
+
+.buyTable {
+  flex-direction: row;
+}
+
+.sellTable {
+  flex-direction: row-reverse;
+}

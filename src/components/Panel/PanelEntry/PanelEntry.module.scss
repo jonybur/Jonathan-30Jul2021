@@ -1,0 +1,23 @@
+// TODO: MOVE THIS TO SAME STYLESHEET AS PANELHEADER, PANEL
+
+.cell {
+  text-align: right;
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 100%;
+  list-style: none;
+  width: 33.33%;
+  font-family: monospace;
+  color: white;
+  padding: 3px 30px 3px 0;
+}
+
+// TODO: MOVE THESE TO ANOTHER STYLESHEET
+
+.priceCellBuy {
+  color: #11a16e;
+}
+
+.priceCellSell {
+  color: #a33034;
+}

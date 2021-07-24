@@ -1,0 +1,26 @@
+.footerWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+}
+
+.button {
+  display: flex;
+  width: 125px;
+  height: 35px;
+  color: white;
+  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.toggleButton {
+  background-color: #5741d9;
+}
+
+.killButton {
+  background-color: #b91d1d;
+}

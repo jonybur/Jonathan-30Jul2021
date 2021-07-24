@@ -1,0 +1,15 @@
+.cell {
+  text-align: right;
+  box-sizing: border-box;
+  flex-grow: 1;
+  width: 100%;
+  list-style: none;
+  width: 33.33%;
+  text-transform: uppercase;
+  color: #545b69;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  padding: 3px 30px 3px 0;
+  border-top: 1px solid #2c3443;
+  border-bottom: 1px solid #1d242f;
+}
