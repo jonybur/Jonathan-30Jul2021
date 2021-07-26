@@ -50,10 +50,12 @@ const blob = new Blob([
     
             xbtMode = !xbtMode;
     
+            // throw new Error("failure");
+
             await socket.send(unsubscriptionPackage);
             await socket.send(connectionPackage);
           } catch (error) {
-            // handle an error here
+            connectedPorts.forEach((port) => port.postMessage({type: "error", message: error}));
           }
         }
       });
@@ -71,26 +73,42 @@ const worker = new SharedWorker(URL.createObjectURL(blob));
 
 worker.port.start();
 
+const unloadWorker = () => {
+  worker.port.postMessage({
+    action: "unload",
+    value: null,
+  });
+  worker.port.close();
+};
+
 export function orderbookChannel() {
   return eventChannel((emit: any) => {
-    worker.port.addEventListener("message", emit);
+    worker.port.addEventListener("message", (payload: any) => {
+      if (payload.data.type === "error") {
+        return;
+      }
+      emit(payload);
+    });
+    return unloadWorker;
+  });
+}
 
-    return () => {
-      worker.port.postMessage({
-        action: "unload",
-        value: null,
-      });
-      worker.port.close();
-    };
+export function errorChannel() {
+  return eventChannel((emit: any) => {
+    worker.port.addEventListener("message", (payload: any) => {
+      if (payload.data.type !== "error") {
+        return;
+      }
+      emit(payload);
+    });
+    return unloadWorker;
   });
 }
 
 export function unsubscribeFromDatafeed() {
-  // const sendMessageToSocket = (message: any) => {
   worker.port.postMessage({
     action: "unsubscribe",
   });
-  // };
 }
 
 export const updateOrders = (orders: any, deltaOrders: any) => {
