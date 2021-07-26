@@ -1,13 +1,10 @@
 .headerWrapper {
-  display: flex;
+  display: none;
   justify-content: space-between;
   padding: 5px 15px;
   align-items: center;
   font-size: 12px;
-
-  .title {
-    color: white;
-  }
+  justify-content: center;
 
   .spread {
     color: #545b69;
@@ -19,7 +16,7 @@
 }
 
 @media (max-width: 600px) {
-  .spread {
-    display: none;
+  .headerWrapper {
+    display: flex;
   }
 }

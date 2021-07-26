@@ -1,13 +1,11 @@
-import styles from "./Header.module.scss";
+import styles from "./MiddleHeader.module.scss";
 
-export function Header() {
+export function MiddleHeader() {
   return (
     <div className={styles.headerWrapper}>
-      <span className={styles.title}>Order Book</span>
       <span className={styles.spread}>
         Spread: <span className={styles.digits}>17.0 (0.05%)</span>
       </span>
-      <select></select>
     </div>
   );
 }

@@ -1,10 +1,24 @@
+.entryWrapper {
+  width: 100%;
+  display: flex;
+  position: relative;
+  height: 18px;
+  flex-grow: 0;
+}
+
+.entryWrapperBuy {
+  flex-direction: row;
+}
+
+.entryWrapperSell {
+  flex-direction: row-reverse;
+}
+
 // TODO: MOVE THIS TO SAME STYLESHEET AS PANELHEADER, PANEL
 
 .cell {
   text-align: right;
   box-sizing: border-box;
-  flex-grow: 1;
-  width: 100%;
   list-style: none;
   width: 33.33%;
   font-family: monospace;
@@ -14,10 +28,37 @@
 
 // TODO: MOVE THESE TO ANOTHER STYLESHEET
 
+.backgroundBuy {
+  background-color: #113534;
+  right: 0;
+}
+
+.backgroundSell {
+  background-color: #3d1e28;
+  left: 0;
+}
+
 .priceCellBuy {
   color: #11a16e;
 }
 
 .priceCellSell {
   color: #a33034;
+}
+
+.background {
+  position: absolute;
+  height: 100%;
+  z-index: -1;
+}
+
+@media (max-width: 600px) {
+  .backgroundBuy {
+    left: 0;
+    right: initial;
+  }
+
+  .entryWrapperBuy {
+    flex-direction: row-reverse;
+  }
 }

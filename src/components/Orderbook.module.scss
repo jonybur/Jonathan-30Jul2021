@@ -2,3 +2,18 @@
   display: flex;
   flex-direction: row;
 }
+
+.middleHeader {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .panelsWrapper {
+    flex-direction: column-reverse;
+  }
+
+  .middleHeader {
+    display: flex;
+    justify-content: center;
+  }
+}

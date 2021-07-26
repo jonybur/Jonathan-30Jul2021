@@ -3,14 +3,14 @@ import { Provider } from "react-redux";
 
 import "./index.css";
 
-import { App } from "./App";
+import { Orderbook } from "./components";
 import { getConfiguredStore } from "./modules/store";
 
 const store = getConfiguredStore();
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <Orderbook />
   </Provider>,
   document.getElementById("root")
 );

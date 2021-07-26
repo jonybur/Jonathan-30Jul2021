@@ -1,4 +1,5 @@
-import { RECEIVE_ORDERBOOK_INFORMATION } from "./actions";
+import { RECEIVE_ORDERBOOK_DELTA, RECEIVE_ORDERBOOK_SNAPSHOT } from "./actions";
+import { generateHashedOrders, updateOrders } from "./exchange";
 
 export const INITIAL_STATE: any = {
   asks: [],
@@ -7,15 +8,28 @@ export const INITIAL_STATE: any = {
 
 export const reducer = (state: any = INITIAL_STATE, action: any): any => {
   switch (action.type) {
-    case RECEIVE_ORDERBOOK_INFORMATION: {
-      const { orderbookInfo } = action.payload;
-      const { asks, bids } = orderbookInfo;
+    case RECEIVE_ORDERBOOK_SNAPSHOT: {
+      const { orderbookSnapshot } = action.payload;
+      const { asks, bids } = orderbookSnapshot;
+
       return {
         ...state,
-        asks: asks ? [...state.asks, ...asks] : state.asks,
-        bids: bids ? [...state.bids, ...bids] : state.bids,
+        asks: generateHashedOrders(asks),
+        bids: generateHashedOrders(bids),
       };
     }
+
+    case RECEIVE_ORDERBOOK_DELTA: {
+      const { orderbookDelta } = action.payload;
+      const { asks, bids } = orderbookDelta;
+
+      return {
+        ...state,
+        asks: updateOrders(state.asks, asks),
+        bids: updateOrders(state.bids, bids),
+      };
+    }
+
     default:
       return state;
   }

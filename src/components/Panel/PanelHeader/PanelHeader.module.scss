@@ -1,10 +1,23 @@
+.headerWrapper {
+  display: flex;
+  height: 22px;
+}
+
+.headerWrapperBuy {
+  flex-direction: row;
+}
+
+.headerWrapperSell {
+  flex-direction: row-reverse;
+}
+
 .cell {
   text-align: right;
   box-sizing: border-box;
-  flex-grow: 1;
   width: 100%;
   list-style: none;
   width: 33.33%;
+  flex-grow: 0;
   text-transform: uppercase;
   color: #545b69;
   font-size: 12px;
@@ -12,4 +25,14 @@
   padding: 3px 30px 3px 0;
   border-top: 1px solid #2c3443;
   border-bottom: 1px solid #1d242f;
+}
+
+@media (max-width: 600px) {
+  .headerWrapperBuy {
+    display: none;
+  }
+
+  .headerWrapperSell {
+    order: 1;
+  }
 }

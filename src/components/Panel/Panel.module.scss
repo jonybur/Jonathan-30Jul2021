@@ -1,22 +1,30 @@
 .table {
   display: flex;
-  flex-wrap: wrap;
+  width: 50%;
+  flex-direction: column;
 }
 
 .cell {
   text-align: right;
   box-sizing: border-box;
-  flex-grow: 1;
+  height: 18px;
+  flex-grow: 0;
   width: 100%;
   list-style: none;
   width: 33.33%;
   padding: 3px 30px 3px 0;
 }
 
-.buyTable {
-  flex-direction: row;
-}
+@media (max-width: 600px) {
+  .table {
+    width: 100%;
+  }
 
-.sellTable {
-  flex-direction: row-reverse;
+  .buyTable {
+    flex-direction: column;
+  }
+
+  .sellTable {
+    flex-direction: column-reverse;
+  }
 }

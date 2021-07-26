@@ -1,5 +1,6 @@
 import { eventChannel } from "redux-saga";
 
+// TODO: use !!raw-loader!
 const blob = new Blob([
   `
 (function () {
@@ -42,6 +43,9 @@ const blob = new Blob([
 `,
 ]);
 
+export const ORDERBOOK_SNAPSHOT = "book_ui_1_snapshot";
+export const ORDERBOOK_DELTA = "book_ui_1";
+
 const worker = new SharedWorker(URL.createObjectURL(blob));
 
 worker.port.start();
@@ -59,3 +63,48 @@ export function orderbookChannel() {
     };
   });
 }
+
+export const updateOrders = (orders: any, deltaOrders: any) => {
+  if (!deltaOrders) {
+    return orders;
+  }
+
+  const updatedOrders = { ...orders };
+  deltaOrders.forEach((deltaOrder: any) => {
+    const [price, size] = deltaOrder;
+    if (updatedOrders[price] && size === 0) {
+      delete updatedOrders[price];
+    }
+
+    if (size > 0) {
+      // adds or updates value
+      updatedOrders[price] = { price, size };
+    }
+  });
+
+  return updatedOrders;
+};
+
+export const generateHashedOrders = (orders: any) => {
+  const hashedOrders: any = {};
+  orders.forEach((ask: any) => {
+    const [price, size] = ask;
+    hashedOrders[price] = { price, size };
+  });
+  return hashedOrders;
+};
+
+export const generateTotals = (orders: any) => {
+  const ordersWithTotal: any = [];
+  for (let i = 0; i < orders.length; i++) {
+    const currentOrder = orders[i];
+    const previousOrder = ordersWithTotal[i - 1];
+    ordersWithTotal[i] = {
+      ...currentOrder,
+      total: previousOrder
+        ? previousOrder.total + currentOrder.size
+        : currentOrder.size,
+    };
+  }
+  return ordersWithTotal;
+};
