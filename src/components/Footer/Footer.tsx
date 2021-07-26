@@ -2,10 +2,14 @@ import classNames from "classnames";
 import styles from "./Footer.module.scss";
 
 export function Footer(props: any) {
-  const { onToggleFeed } = props;
+  const { onToggleFeed, onKillFeed } = props;
 
   const handleFeed = () => {
     onToggleFeed();
+  };
+
+  const killFeed = () => {
+    onKillFeed();
   };
 
   return (
@@ -16,7 +20,12 @@ export function Footer(props: any) {
       >
         Toggle Feed
       </div>
-      <div className={`${styles.button} ${styles.killButton}`}>Kill Feed</div>
+      <div
+        className={classNames(styles.button, styles.killButton)}
+        onClick={killFeed}
+      >
+        Kill Feed
+      </div>
     </div>
   );
 }

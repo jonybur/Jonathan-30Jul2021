@@ -1,5 +1,6 @@
 import { applyMiddleware, compose, createStore } from "redux";
 import createSagasMiddleware from "redux-saga";
+import { initExchange } from "./exchange";
 
 import { reducer } from "./reducer";
 import { rootSaga } from "./sagas";
@@ -16,6 +17,8 @@ const sagasMiddleware = createSagasMiddleware();
 
 const middleware = applyMiddleware(sagasMiddleware);
 const enhancer = composeEnhancers(middleware);
+
+initExchange();
 
 const getConfiguredStore = () => {
   const store = createStore(reducer, enhancer);

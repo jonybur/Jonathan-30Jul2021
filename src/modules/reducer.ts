@@ -1,14 +1,26 @@
 import {
   CHANGE_GROUP,
+  STORE_ERROR,
   RECEIVE_ORDERBOOK_DELTA,
   RECEIVE_ORDERBOOK_SNAPSHOT,
+  EMPTY_ERROR,
+  TOGGLE_FEED_SUCCESS,
 } from "./actions";
-import { generateHashedOrders, updateOrders } from "./exchange";
+import {
+  ETH_GROUPS,
+  generateHashedOrders,
+  updateOrders,
+  XBT_GROUPS,
+  XBT_PRODUCT_ID,
+} from "./exchange";
 
 export const INITIAL_STATE: any = {
   asks: [],
   bids: [],
+  error: undefined,
   group: 0.5,
+  groups: XBT_GROUPS,
+  productID: XBT_PRODUCT_ID,
 };
 
 export const reducer = (state: any = INITIAL_STATE, action: any): any => {
@@ -32,6 +44,28 @@ export const reducer = (state: any = INITIAL_STATE, action: any): any => {
         ...state,
         asks: updateOrders(state.asks, asks),
         bids: updateOrders(state.bids, bids),
+      };
+    }
+
+    case STORE_ERROR: {
+      const { errorMessage } = action.payload;
+      return { ...state, error: errorMessage };
+    }
+
+    case EMPTY_ERROR: {
+      return { ...state, error: undefined };
+    }
+
+    case TOGGLE_FEED_SUCCESS: {
+      const { newProductID } = action.payload;
+
+      const groups = newProductID === XBT_PRODUCT_ID ? XBT_GROUPS : ETH_GROUPS;
+
+      return {
+        ...state,
+        productID: newProductID,
+        group: groups[0],
+        groups: groups,
       };
     }
 

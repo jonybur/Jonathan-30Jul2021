@@ -20,7 +20,8 @@
 @media (max-width: 600px) {
   .table {
     width: 100%;
-    height: initial;
+    height: 45vh;
+    overflow: scroll;
   }
 
   .buyTable {

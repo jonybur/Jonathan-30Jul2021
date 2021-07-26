@@ -1,13 +1,21 @@
 import { eventChannel } from "redux-saga";
 
+const XBT_PRODUCT_ID = "PI_XBTUSD";
+const ETH_PRODUCT_ID = "PI_ETHUSD";
+const ORDERBOOK_SNAPSHOT = "book_ui_1_snapshot";
+const ORDERBOOK_DELTA = "book_ui_1";
+export const XBT_GROUPS = [0.5, 1, 2.5];
+export const ETH_GROUPS = [0.05, 0.1, 0.25];
+let worker: SharedWorker;
+
 // TODO: use !!raw-loader!
 const blob = new Blob([
   `
   (function () {
     const XBT_PRODUCT_ID = "PI_XBTUSD";
     const ETH_PRODUCT_ID = "PI_ETHUSD";
-    let xbtMode = true;
-  
+    let errored = false;
+
     const connectedPorts = [];
     const socket = new WebSocket("wss://www.cryptofacilities.com/ws/v1");
   
@@ -34,29 +42,51 @@ const blob = new Blob([
       port.addEventListener("message", async ({ data }) => {
         const { action, value } = data;
   
-        if (action === "unsubscribe") {
-          try {
-            const unsubscriptionPackage = JSON.stringify({
-              event: "unsubscribe",
-              feed: "book_ui_1",
-              product_ids: [xbtMode ? XBT_PRODUCT_ID : ETH_PRODUCT_ID],
-            });
-    
-            const connectionPackage = JSON.stringify({
-              event: "subscribe",
-              feed: "book_ui_1",
-              product_ids: [xbtMode ? ETH_PRODUCT_ID : XBT_PRODUCT_ID],
-            });
-    
-            xbtMode = !xbtMode;
-    
-            // throw new Error("failure");
+        try { 
+          const newProduct = value === XBT_PRODUCT_ID ? ETH_PRODUCT_ID : XBT_PRODUCT_ID;
 
-            await socket.send(unsubscriptionPackage);
-            await socket.send(connectionPackage);
-          } catch (error) {
-            connectedPorts.forEach((port) => port.postMessage({type: "error", message: error}));
+          switch (action) {
+            case "toggleFeed": {
+              const unsubscriptionPackage = JSON.stringify({
+                event: "unsubscribe",
+                feed: "book_ui_1",
+                product_ids: [value],
+              });
+              const connectionPackage = JSON.stringify({
+                event: "subscribe",
+                feed: "book_ui_1",
+                product_ids: [newProduct],
+              });
+
+              await socket.send(unsubscriptionPackage);
+
+              await socket.send(connectionPackage);
+
+              break;
+            }
+
+            case "simulateError": {
+
+              const unsubscriptionPackage = JSON.stringify({
+                event: errored ? "subscribe" : "unsubscribe",
+                feed: "book_ui_1",
+                product_ids: [value],
+              });
+
+              await socket.send(unsubscriptionPackage);
+
+              errored = !errored;
+
+              if (errored) {
+                throw new Error("Simulated Error");
+              }
+
+            }
+
           }
+
+        } catch (error) {
+          connectedPorts.forEach((port) => port.postMessage({type: "error", message: error}));
         }
       });
   
@@ -66,22 +96,19 @@ const blob = new Blob([
 `,
 ]);
 
-export const ORDERBOOK_SNAPSHOT = "book_ui_1_snapshot";
-export const ORDERBOOK_DELTA = "book_ui_1";
+function initExchange() {
+  worker = new SharedWorker(URL.createObjectURL(blob));
+  worker.port.start();
+}
 
-const worker = new SharedWorker(URL.createObjectURL(blob));
-
-worker.port.start();
-
-const unloadWorker = () => {
+function unloadWorker() {
   worker.port.postMessage({
     action: "unload",
-    value: null,
   });
   worker.port.close();
-};
+}
 
-export function orderbookChannel() {
+function orderbookChannel() {
   return eventChannel((emit: any) => {
     worker.port.addEventListener("message", (payload: any) => {
       if (payload.data.type === "error") {
@@ -93,7 +120,7 @@ export function orderbookChannel() {
   });
 }
 
-export function errorChannel() {
+function errorChannel() {
   return eventChannel((emit: any) => {
     worker.port.addEventListener("message", (payload: any) => {
       if (payload.data.type !== "error") {
@@ -105,13 +132,23 @@ export function errorChannel() {
   });
 }
 
-export function unsubscribeFromDatafeed() {
+function toggleOrderbook(productID: string) {
   worker.port.postMessage({
-    action: "unsubscribe",
+    action: "toggleFeed",
+    value: productID,
+  });
+
+  return productID === XBT_PRODUCT_ID ? ETH_PRODUCT_ID : XBT_PRODUCT_ID;
+}
+
+function simulateOrderbookError(productID: string) {
+  worker.port.postMessage({
+    action: "simulateError",
+    value: productID,
   });
 }
 
-export const updateOrders = (orders: any, deltaOrders: any) => {
+function updateOrders(orders: any, deltaOrders: any) {
   if (!deltaOrders) {
     return orders;
   }
@@ -130,18 +167,18 @@ export const updateOrders = (orders: any, deltaOrders: any) => {
   });
 
   return updatedOrders;
-};
+}
 
-export const generateHashedOrders = (orders: any) => {
+function generateHashedOrders(orders: any) {
   const hashedOrders: any = {};
   orders.forEach((ask: any) => {
     const [price, size] = ask;
     hashedOrders[price] = { price, size };
   });
   return hashedOrders;
-};
+}
 
-export const generateTotals = (orders: any, group: number) => {
+function generateTotals(orders: any, group: number) {
   const ordersWithTotal: any = [];
   for (let i = 0; i < orders.length; i++) {
     const currentOrder = orders[i];
@@ -170,4 +207,19 @@ export const generateTotals = (orders: any, group: number) => {
     }
   }
   return ordersWithTotal;
+}
+
+export {
+  initExchange,
+  orderbookChannel,
+  errorChannel,
+  toggleOrderbook,
+  simulateOrderbookError,
+  updateOrders,
+  generateHashedOrders,
+  generateTotals,
+  XBT_PRODUCT_ID,
+  ETH_PRODUCT_ID,
+  ORDERBOOK_SNAPSHOT,
+  ORDERBOOK_DELTA,
 };

@@ -1,19 +1,26 @@
-import { put, call, take, fork, takeEvery } from "redux-saga/effects";
+import { put, call, take, fork, takeEvery, select } from "redux-saga/effects";
 import {
   receiveOrderbookSnapshot,
   receiveOrderbookDelta,
-  TOGGLE_FEED,
+  storeError,
+  TOGGLE_FEED_REQUEST,
+  KILL_FEED,
+  toggleFeedFailure,
+  toggleFeedSuccess,
 } from "./actions";
 import {
+  ORDERBOOK_SNAPSHOT,
+  ORDERBOOK_DELTA,
   errorChannel,
   orderbookChannel,
-  ORDERBOOK_DELTA,
-  ORDERBOOK_SNAPSHOT,
-  unsubscribeFromDatafeed,
+  toggleOrderbook,
+  simulateOrderbookError,
 } from "./exchange";
+import { getCurrentProductID } from "./selectors";
 
 export function* rootSaga() {
-  yield takeEvery(TOGGLE_FEED, toggleFeed);
+  yield takeEvery(TOGGLE_FEED_REQUEST, toggleFeed);
+  yield takeEvery(KILL_FEED, simulateError);
   yield fork(watchForOrderbookUpdates);
   yield fork(watchForOrderbookErrors);
 }
@@ -41,14 +48,25 @@ export function* watchForOrderbookErrors(): any {
   while (true) {
     try {
       const { data } = yield take(eventChannel);
-      debugger;
-      // handle error
+      const { message } = data;
+      yield put(storeError(message));
     } catch (err) {
       console.error("socket error:", err);
     }
   }
 }
 
+export function* simulateError(): any {
+  const productID = yield select(getCurrentProductID);
+  yield call(simulateOrderbookError, productID);
+}
+
 export function* toggleFeed(): any {
-  yield call(unsubscribeFromDatafeed);
+  try {
+    const productID = yield select(getCurrentProductID);
+    const newProduct = yield call(toggleOrderbook, productID);
+    yield put(toggleFeedSuccess(newProduct));
+  } catch (error) {
+    yield put(toggleFeedFailure());
+  }
 }

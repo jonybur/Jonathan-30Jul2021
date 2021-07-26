@@ -12,9 +12,10 @@ import {
 import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
 import styles from "./Orderbook.module.scss";
 import { generateTotals } from "../modules/exchange";
+import { ErrorToast } from "./ErrorToast";
 
 export function Orderbook(props: any) {
-  const { asks, bids, group } = props;
+  const { asks, bids, error, group } = props;
   const [animationFrame, setAnimationFrame] = useState(0);
 
   const [memoAsks, setMemoAsks] = useState([]);
@@ -51,14 +52,17 @@ export function Orderbook(props: any) {
   });
 
   return (
-    <div className={styles.orderBookWrapper}>
-      <Header />
-      <div className={styles.panelsWrapper}>
-        <Panel mode={PriceMode.Buy} orders={memoAsks} maxTotal={maxTotal} />
-        <MiddleHeader />
-        <Panel mode={PriceMode.Sell} orders={memoBids} maxTotal={maxTotal} />
+    <>
+      <div className={styles.orderBookWrapper}>
+        <Header />
+        <div className={styles.panelsWrapper}>
+          <Panel mode={PriceMode.Buy} orders={memoAsks} maxTotal={maxTotal} />
+          <MiddleHeader />
+          <Panel mode={PriceMode.Sell} orders={memoBids} maxTotal={maxTotal} />
+        </div>
+        <Footer />
       </div>
-      <Footer />
-    </div>
+      <ErrorToast errorMessage={error} />
+    </>
   );
 }

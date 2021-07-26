@@ -1,6 +1,16 @@
 import { useRef, useEffect } from "react";
 import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
 
+function usePrevious(value: any) {
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+}
+
 export function sortOrders(orders: any, mode: PriceMode): any {
   const ordersArray = Object.values(orders);
 
@@ -17,7 +27,7 @@ export const useAnimationFrame = (callback: any) => {
   const previousTimeRef = useRef();
 
   const animate = (time: any) => {
-    if (previousTimeRef && previousTimeRef.current != undefined) {
+    if (previousTimeRef && !!previousTimeRef.current) {
       const deltaTime = time - (previousTimeRef as any).current;
       callback(deltaTime);
     }
@@ -30,16 +40,6 @@ export const useAnimationFrame = (callback: any) => {
     return () => cancelAnimationFrame((requestRef as any).current);
   }, []);
 };
-
-function usePrevious(value: any) {
-  const ref = useRef();
-
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref.current;
-}
 
 export function useEffectAllDepsChange(fn: any, deps: any) {
   const prevDeps = usePrevious(deps);
