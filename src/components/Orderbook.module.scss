@@ -1,3 +1,11 @@
+.orderBookWrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0 50px;
+}
+
 .panelsWrapper {
   display: flex;
   flex-direction: row;
@@ -8,6 +16,12 @@
 }
 
 @media (max-width: 600px) {
+  .orderBookWrapper {
+    display: block;
+    height: initial;
+    padding: 0;
+  }
+
   .panelsWrapper {
     flex-direction: column-reverse;
   }

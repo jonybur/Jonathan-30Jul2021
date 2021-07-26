@@ -16,6 +16,16 @@
   .digits {
     font-family: monospace;
   }
+
+  .select {
+    font-size: 12px;
+    background-color: #303947;
+    color: white;
+    border: 0;
+    outline: none;
+    padding: 2px 3px;
+    border-radius: 4px;
+  }
 }
 
 @media (max-width: 600px) {

@@ -11,9 +11,10 @@ import {
 
 import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
 import styles from "./Orderbook.module.scss";
+import { generateTotals } from "../modules/exchange";
 
 export function Orderbook(props: any) {
-  const { asks, bids } = props;
+  const { asks, bids, group } = props;
   const [animationFrame, setAnimationFrame] = useState(0);
 
   const [memoAsks, setMemoAsks] = useState([]);
@@ -23,14 +24,23 @@ export function Orderbook(props: any) {
   const updateOrders = useCallback(() => {
     const sortedAsks = sortOrders(asks, PriceMode.Buy);
     const sortedBids = sortOrders(bids, PriceMode.Sell);
+
+    const asksWithTotals = generateTotals(sortedAsks, group);
+    const bidsWithTotals = generateTotals(sortedBids, group);
+
     const maxTotalAsks =
-      sortedAsks.length > 0 ? sortedAsks[sortedAsks.length - 1].total : 0;
+      asksWithTotals.length > 0
+        ? asksWithTotals[asksWithTotals.length - 1].total
+        : 0;
     const maxTotalBids =
-      sortedBids.length > 0 ? sortedBids[sortedBids.length - 1].total : 0;
-    setMemoAsks(sortedAsks);
-    setMemoBids(sortedBids);
+      bidsWithTotals.length > 0
+        ? bidsWithTotals[bidsWithTotals.length - 1].total
+        : 0;
+
+    setMemoAsks(asksWithTotals);
+    setMemoBids(bidsWithTotals);
     setMaxTotal(Math.max(maxTotalAsks, maxTotalBids));
-  }, [asks, bids]);
+  }, [asks, bids, group]);
 
   useEffectAllDepsChange(() => {
     updateOrders();
@@ -41,7 +51,7 @@ export function Orderbook(props: any) {
   });
 
   return (
-    <>
+    <div className={styles.orderBookWrapper}>
       <Header />
       <div className={styles.panelsWrapper}>
         <Panel mode={PriceMode.Buy} orders={memoAsks} maxTotal={maxTotal} />
@@ -49,6 +59,6 @@ export function Orderbook(props: any) {
         <Panel mode={PriceMode.Sell} orders={memoBids} maxTotal={maxTotal} />
       </div>
       <Footer />
-    </>
+    </div>
   );
 }

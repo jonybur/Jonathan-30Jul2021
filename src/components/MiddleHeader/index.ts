@@ -1,2 +1,2 @@
-import { MiddleHeader } from "./MiddleHeader";
+import MiddleHeader from "./MiddleHeader.container";
 export { MiddleHeader };

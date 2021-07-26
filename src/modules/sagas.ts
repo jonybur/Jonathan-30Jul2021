@@ -1,12 +1,18 @@
-import { put, call, take, fork } from "redux-saga/effects";
-import { receiveOrderbookSnapshot, receiveOrderbookDelta } from "./actions";
+import { put, call, take, fork, takeEvery } from "redux-saga/effects";
+import {
+  receiveOrderbookSnapshot,
+  receiveOrderbookDelta,
+  TOGGLE_FEED,
+} from "./actions";
 import {
   orderbookChannel,
   ORDERBOOK_DELTA,
   ORDERBOOK_SNAPSHOT,
+  unsubscribeFromDatafeed,
 } from "./exchange";
 
 export function* rootSaga() {
+  yield takeEvery(TOGGLE_FEED, toggleFeed);
   yield fork(watchForOrderbookUpdates);
 }
 
@@ -26,4 +32,10 @@ export function* watchForOrderbookUpdates(): any {
       console.error("socket error:", err);
     }
   }
+}
+
+export function* toggleFeed(): any {
+  try {
+    yield call(unsubscribeFromDatafeed);
+  } catch (error) {}
 }

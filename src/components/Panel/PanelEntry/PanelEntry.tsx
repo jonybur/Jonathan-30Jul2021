@@ -27,7 +27,9 @@ export function PanelEntry(props: any) {
     <div className={entryWrapperClassnames}>
       <div className={styles.cell}>{order.total.toLocaleString()}</div>
       <div className={styles.cell}>{order.size.toLocaleString()}</div>
-      <div className={priceClassnames}>{order.price.toLocaleString()}</div>
+      <div className={priceClassnames}>
+        {order.price.toFixed(2).toLocaleString()}
+      </div>
       <div
         className={backgroundClassnames}
         style={{ width: `${backgroundWidth}%` }}

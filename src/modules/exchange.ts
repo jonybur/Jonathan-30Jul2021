@@ -3,43 +3,64 @@ import { eventChannel } from "redux-saga";
 // TODO: use !!raw-loader!
 const blob = new Blob([
   `
-(function () {
-  const connectedPorts = [];
-  const socket = new WebSocket("wss://www.cryptofacilities.com/ws/v1");
-
-  socket.addEventListener("open", () => {
-    const connectionPackage = JSON.stringify({
-      event: "subscribe",
-      feed: "book_ui_1",
-      product_ids: ["PI_XBTUSD"],
+  (function () {
+    const XBT_PRODUCT_ID = "PI_XBTUSD";
+    const ETH_PRODUCT_ID = "PI_ETHUSD";
+    let xbtMode = true;
+  
+    const connectedPorts = [];
+    const socket = new WebSocket("wss://www.cryptofacilities.com/ws/v1");
+  
+    socket.addEventListener("open", () => {
+      const connectionPackage = JSON.stringify({
+        event: "subscribe",
+        feed: "book_ui_1",
+        product_ids: [XBT_PRODUCT_ID],
+      });
+  
+      socket.send(connectionPackage);
     });
-
-    socket.send(connectionPackage);
-  });
-
-  socket.addEventListener('message', ({ data }) => {
-    const package = JSON.parse(data);
-    connectedPorts.forEach(port => port.postMessage(package));
-  });
-
-  self.addEventListener('connect', ({ ports }) => {
-    const port = ports[0];
-    connectedPorts.push(port);
-
-    port.addEventListener('message', ({ data }) => {
-      const { action, value } = data;
-
-      if (action === 'send') {
-        socket.send(JSON.stringify(value));
-      } else if (action === 'unload') {
-        const index = connectedPorts.indexOf(port);
-        connectedPorts.splice(index, 1);
-      }
+  
+    socket.addEventListener("message", ({ data }) => {
+      const package = JSON.parse(data);
+      console.log({ package });
+      connectedPorts.forEach((port) => port.postMessage(package));
     });
+  
+    self.addEventListener("connect", ({ ports }) => {
+      const port = ports[0];
+      connectedPorts.push(port);
+  
+      port.addEventListener("message", async ({ data }) => {
+        const { action, value } = data;
+  
+        if (action === "unsubscribe") {
+          try {
+            const unsubscriptionPackage = JSON.stringify({
+              event: "unsubscribe",
+              feed: "book_ui_1",
+              product_ids: [xbtMode ? XBT_PRODUCT_ID : ETH_PRODUCT_ID],
+            });
     
-    port.start();
-  });
-})();
+            const connectionPackage = JSON.stringify({
+              event: "subscribe",
+              feed: "book_ui_1",
+              product_ids: [xbtMode ? ETH_PRODUCT_ID : XBT_PRODUCT_ID],
+            });
+    
+            xbtMode = !xbtMode;
+    
+            await socket.send(unsubscriptionPackage);
+            await socket.send(connectionPackage);
+          } catch (error) {
+            // handle an error here
+          }
+        }
+      });
+  
+      port.start();
+    });
+  })();
 `,
 ]);
 
@@ -62,6 +83,14 @@ export function orderbookChannel() {
       worker.port.close();
     };
   });
+}
+
+export function unsubscribeFromDatafeed() {
+  // const sendMessageToSocket = (message: any) => {
+  worker.port.postMessage({
+    action: "unsubscribe",
+  });
+  // };
 }
 
 export const updateOrders = (orders: any, deltaOrders: any) => {
@@ -94,17 +123,33 @@ export const generateHashedOrders = (orders: any) => {
   return hashedOrders;
 };
 
-export const generateTotals = (orders: any) => {
+export const generateTotals = (orders: any, group: number) => {
   const ordersWithTotal: any = [];
   for (let i = 0; i < orders.length; i++) {
     const currentOrder = orders[i];
-    const previousOrder = ordersWithTotal[i - 1];
-    ordersWithTotal[i] = {
-      ...currentOrder,
-      total: previousOrder
-        ? previousOrder.total + currentOrder.size
-        : currentOrder.size,
-    };
+    const lastOrder = ordersWithTotal[ordersWithTotal.length - 1];
+
+    if (Number(group) === 1) {
+      currentOrder.price = Number(currentOrder.price.toFixed(0));
+    }
+
+    if (
+      i > 0 &&
+      lastOrder &&
+      Math.abs(lastOrder.price - currentOrder.price) < group
+    ) {
+      ordersWithTotal[ordersWithTotal.length - 1] = {
+        ...lastOrder,
+        total: lastOrder.total + currentOrder.size,
+      };
+    } else {
+      ordersWithTotal[ordersWithTotal.length] = {
+        ...currentOrder,
+        total: lastOrder
+          ? lastOrder.total + currentOrder.size
+          : currentOrder.size,
+      };
+    }
   }
   return ordersWithTotal;
 };

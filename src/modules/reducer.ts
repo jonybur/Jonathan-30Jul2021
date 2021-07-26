@@ -1,9 +1,14 @@
-import { RECEIVE_ORDERBOOK_DELTA, RECEIVE_ORDERBOOK_SNAPSHOT } from "./actions";
+import {
+  CHANGE_GROUP,
+  RECEIVE_ORDERBOOK_DELTA,
+  RECEIVE_ORDERBOOK_SNAPSHOT,
+} from "./actions";
 import { generateHashedOrders, updateOrders } from "./exchange";
 
 export const INITIAL_STATE: any = {
   asks: [],
   bids: [],
+  group: 0.5,
 };
 
 export const reducer = (state: any = INITIAL_STATE, action: any): any => {
@@ -28,6 +33,11 @@ export const reducer = (state: any = INITIAL_STATE, action: any): any => {
         asks: updateOrders(state.asks, asks),
         bids: updateOrders(state.bids, bids),
       };
+    }
+
+    case CHANGE_GROUP: {
+      const { group } = action.payload;
+      return { ...state, group };
     }
 
     default:

@@ -1,8 +1,7 @@
 import { useRef, useEffect } from "react";
-import { generateTotals } from "../modules/exchange";
 import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
 
-export function sortOrders(orders: any, mode: any) {
+export function sortOrders(orders: any, mode: PriceMode): any {
   const ordersArray = Object.values(orders);
 
   const sortedOrders = ordersArray.sort((a: any, b: any) => {
@@ -10,7 +9,7 @@ export function sortOrders(orders: any, mode: any) {
     return mode === PriceMode.Buy ? sortValue : -sortValue;
   });
 
-  return generateTotals(sortedOrders);
+  return sortedOrders;
 }
 
 export const useAnimationFrame = (callback: any) => {

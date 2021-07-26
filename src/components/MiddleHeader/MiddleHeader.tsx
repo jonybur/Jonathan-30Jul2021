@@ -1,10 +1,12 @@
 import styles from "./MiddleHeader.module.scss";
 
-export function MiddleHeader() {
+export function MiddleHeader(props: any) {
+  const { group } = props;
+
   return (
     <div className={styles.headerWrapper}>
       <span className={styles.spread}>
-        Spread: <span className={styles.digits}>17.0 (0.05%)</span>
+        Group by: <span className={styles.digits}>{group}</span>
       </span>
     </div>
   );
