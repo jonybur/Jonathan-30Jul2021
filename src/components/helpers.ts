@@ -42,6 +42,7 @@ export const useAnimationFrame = (callback: Callback) => {
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(requestRef.current as number);
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 };
 

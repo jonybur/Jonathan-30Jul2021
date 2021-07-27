@@ -1,6 +1,7 @@
-import { END, EventChannel, eventChannel, Subscribe } from "redux-saga";
-import { SimpleEffect, CallEffectDescriptor } from "redux-saga/effects";
+import { eventChannel } from "redux-saga";
 import { CFOrder, HashedOrders, Order } from "./types";
+// @ts-ignore
+/* eslint-disable import/no-webpack-loader-syntax */ import WorkerSource from "!!raw-loader!./worker";
 
 const XBT_PRODUCT_ID = "PI_XBTUSD";
 const ETH_PRODUCT_ID = "PI_ETHUSD";
@@ -11,92 +12,7 @@ export const ETH_GROUPS = [0.05, 0.1, 0.25];
 let worker: SharedWorker;
 
 // TODO: use !!raw-loader!
-const blob = new Blob([
-  `
-  (function () {
-    const XBT_PRODUCT_ID = "PI_XBTUSD";
-    const ETH_PRODUCT_ID = "PI_ETHUSD";
-    let errored = false;
-
-    const connectedPorts = [];
-    const socket = new WebSocket("wss://www.cryptofacilities.com/ws/v1");
-  
-    socket.addEventListener("open", () => {
-      const connectionPackage = JSON.stringify({
-        event: "subscribe",
-        feed: "book_ui_1",
-        product_ids: [XBT_PRODUCT_ID],
-      });
-  
-      socket.send(connectionPackage);
-    });
-  
-    socket.addEventListener("message", ({ data }) => {
-      const package = JSON.parse(data);
-      console.log({ package });
-      connectedPorts.forEach((port) => port.postMessage(package));
-    });
-  
-    self.addEventListener("connect", ({ ports }) => {
-      const port = ports[0];
-      connectedPorts.push(port);
-  
-      port.addEventListener("message", async ({ data }) => {
-        const { action, value } = data;
-  
-        try { 
-          const newProduct = value === XBT_PRODUCT_ID ? ETH_PRODUCT_ID : XBT_PRODUCT_ID;
-
-          switch (action) {
-            case "toggleFeed": {
-              const unsubscriptionPackage = JSON.stringify({
-                event: "unsubscribe",
-                feed: "book_ui_1",
-                product_ids: [value],
-              });
-              const connectionPackage = JSON.stringify({
-                event: "subscribe",
-                feed: "book_ui_1",
-                product_ids: [newProduct],
-              });
-
-              await socket.send(unsubscriptionPackage);
-
-              await socket.send(connectionPackage);
-
-              break;
-            }
-
-            case "simulateError": {
-
-              const unsubscriptionPackage = JSON.stringify({
-                event: errored ? "subscribe" : "unsubscribe",
-                feed: "book_ui_1",
-                product_ids: [value],
-              });
-
-              await socket.send(unsubscriptionPackage);
-
-              errored = !errored;
-
-              if (errored) {
-                throw new Error("Simulated Error");
-              }
-
-            }
-
-          }
-
-        } catch (error) {
-          connectedPorts.forEach((port) => port.postMessage({type: "error", message: error}));
-        }
-      });
-  
-      port.start();
-    });
-  })();
-`,
-]);
+const blob = new Blob([WorkerSource]);
 
 function initExchange() {
   worker = new SharedWorker(URL.createObjectURL(blob));
