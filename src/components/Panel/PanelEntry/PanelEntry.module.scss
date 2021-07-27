@@ -1,3 +1,5 @@
+@import "../../../styles/colors.scss";
+
 .entryWrapper {
   width: 100%;
   display: flex;
@@ -14,8 +16,6 @@
   flex-direction: row-reverse;
 }
 
-// TODO: MOVE THIS TO SAME STYLESHEET AS PANELHEADER, PANEL
-
 .cell {
   text-align: right;
   box-sizing: border-box;
@@ -26,24 +26,22 @@
   padding: 3px 30px 3px 0;
 }
 
-// TODO: MOVE THESE TO ANOTHER STYLESHEET
-
 .backgroundBuy {
-  background-color: #113534;
+  background-color: $color-green-1;
   right: 0;
 }
 
 .backgroundSell {
-  background-color: #3d1e28;
+  background-color: $color-red-2;
   left: 0;
 }
 
 .priceCellBuy {
-  color: #11a16e;
+  color: $color-green-2;
 }
 
 .priceCellSell {
-  color: #a33034;
+  color: $color-red-3;
 }
 
 .background {

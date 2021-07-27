@@ -11,7 +11,6 @@ export const XBT_GROUPS = [0.5, 1, 2.5];
 export const ETH_GROUPS = [0.05, 0.1, 0.25];
 let worker: SharedWorker;
 
-// TODO: use !!raw-loader!
 const blob = new Blob([WorkerSource]);
 
 function initExchange() {

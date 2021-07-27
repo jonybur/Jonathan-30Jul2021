@@ -1,3 +1,5 @@
+@import "../../styles/colors.scss";
+
 .footerWrapper {
   display: flex;
   flex-direction: row;
@@ -24,9 +26,9 @@
 }
 
 .toggleButton {
-  background-color: #5741d9;
+  background-color: $color-purple;
 }
 
 .killButton {
-  background-color: #b91d1d;
+  background-color: $color-red-1;
 }

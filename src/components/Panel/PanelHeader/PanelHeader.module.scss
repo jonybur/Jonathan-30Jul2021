@@ -1,3 +1,5 @@
+@import "../../../styles/colors.scss";
+
 .headerWrapper {
   display: flex;
   height: 22px;
@@ -19,12 +21,12 @@
   width: 33.33%;
   flex-grow: 0;
   text-transform: uppercase;
-  color: #545b69;
+  color: $color-grey-1;
   font-size: 12px;
   letter-spacing: 0.5px;
   padding: 3px 30px 3px 0;
-  border-top: 1px solid #2c3443;
-  border-bottom: 1px solid #1d242f;
+  border-top: 1px solid $color-grey-3;
+  border-bottom: 1px solid $color-grey-4;
 }
 
 @media (max-width: 600px) {

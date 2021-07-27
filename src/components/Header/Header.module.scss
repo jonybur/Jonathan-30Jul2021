@@ -1,3 +1,5 @@
+@import "../../styles/colors.scss";
+
 .headerWrapper {
   display: flex;
   justify-content: space-between;
@@ -10,7 +12,7 @@
   }
 
   .spread {
-    color: #545b69;
+    color: $color-grey-1;
   }
 
   .digits {
@@ -19,7 +21,7 @@
 
   .select {
     font-size: 12px;
-    background-color: #303947;
+    background-color: $color-grey-2;
     color: white;
     border: 0;
     outline: none;
