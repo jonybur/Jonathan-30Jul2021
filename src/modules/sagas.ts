@@ -1,15 +1,4 @@
-import { EventChannel } from "redux-saga";
-import {
-  put,
-  call,
-  take,
-  fork,
-  takeEvery,
-  select,
-  CallEffectDescriptor,
-  SimpleEffect,
-  SagaReturnType,
-} from "redux-saga/effects";
+import { put, call, take, fork, takeEvery, select } from "redux-saga/effects";
 import {
   receiveOrderbookSnapshot,
   receiveOrderbookDelta,
@@ -36,7 +25,7 @@ export function* rootSaga() {
   yield fork(watchForOrderbookErrors);
 }
 
-export function* watchForOrderbookUpdates(): any {
+export function* watchForOrderbookUpdates(): Generator | void {
   const eventChannel = yield call(orderbookChannel);
   while (true) {
     try {
@@ -54,7 +43,7 @@ export function* watchForOrderbookUpdates(): any {
   }
 }
 
-export function* watchForOrderbookErrors(): any {
+export function* watchForOrderbookErrors(): Generator | void {
   const eventChannel = yield call(errorChannel);
   while (true) {
     try {
@@ -67,12 +56,12 @@ export function* watchForOrderbookErrors(): any {
   }
 }
 
-export function* simulateError(): any {
+export function* simulateError(): Generator | void {
   const productID = yield select(getCurrentProductID);
   yield call(simulateOrderbookError, productID);
 }
 
-export function* toggleFeed(): any {
+export function* toggleFeed(): Generator | void {
   try {
     const productID = yield select(getCurrentProductID);
     const newProduct = yield call(toggleOrderbook, productID);

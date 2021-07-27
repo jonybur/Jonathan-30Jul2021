@@ -143,7 +143,7 @@ function toggleOrderbook(productID: string) {
   return productID === XBT_PRODUCT_ID ? ETH_PRODUCT_ID : XBT_PRODUCT_ID;
 }
 
-function simulateOrderbookError(productID: string) {
+function simulateOrderbookError(productID: string): void {
   worker.port.postMessage({
     action: "simulateError",
     value: productID,
