@@ -5,6 +5,12 @@ import {
   RECEIVE_ORDERBOOK_SNAPSHOT,
   EMPTY_ERROR,
   TOGGLE_FEED_SUCCESS,
+  ReceiveOrderbookSnapshot,
+  ReceiveOrderbookDelta,
+  ChangeGroup,
+  EmptyError,
+  StoreError,
+  ToggleFeedSuccess,
 } from "./actions";
 import {
   ETH_GROUPS,
@@ -13,17 +19,29 @@ import {
   XBT_GROUPS,
   XBT_PRODUCT_ID,
 } from "./exchange";
+import { State } from "./types";
 
-export const INITIAL_STATE: any = {
-  asks: [],
-  bids: [],
+export const INITIAL_STATE: State = {
+  asks: {},
+  bids: {},
   error: undefined,
   group: 0.5,
   groups: XBT_GROUPS,
   productID: XBT_PRODUCT_ID,
 };
 
-export const reducer = (state: any = INITIAL_STATE, action: any): any => {
+type ReducerAction =
+  | ReceiveOrderbookSnapshot
+  | ReceiveOrderbookDelta
+  | StoreError
+  | EmptyError
+  | ToggleFeedSuccess
+  | ChangeGroup;
+
+export const reducer = (
+  state: State = INITIAL_STATE,
+  action: ReducerAction
+): State => {
   switch (action.type) {
     case RECEIVE_ORDERBOOK_SNAPSHOT: {
       const { orderbookSnapshot } = action.payload;

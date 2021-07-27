@@ -1,11 +1,12 @@
-import classNames from "classnames";
-import { PriceMode } from "../PanelEntry/PanelEntry.types";
+import classnames from "classnames";
+import { PriceMode } from "../../../modules/types";
+import { Props } from "./PanelHeader.types";
 import styles from "./PanelHeader.module.scss";
 
-export function PanelHeader(props: any) {
+export function PanelHeader(props: Props) {
   const { mode } = props;
 
-  const headerWrapperClassnames = classNames(styles.headerWrapper, {
+  const headerWrapperClassnames = classnames(styles.headerWrapper, {
     [styles.headerWrapperBuy]: mode === PriceMode.Buy,
     [styles.headerWrapperSell]: mode === PriceMode.Sell,
   });

@@ -3,10 +3,12 @@ import classnames from "classnames";
 import { PanelEntry } from "./PanelEntry";
 import { PanelHeader } from "./PanelHeader";
 
-import { PriceMode } from "./PanelEntry/PanelEntry.types";
+import { Props } from "./Panel.types";
+import { Order, PriceMode } from "../../modules/types";
+
 import styles from "./Panel.module.scss";
 
-export function Panel(props: any) {
+export function Panel(props: Props) {
   const { mode, orders, maxTotal } = props;
 
   const tableClassnames = classnames(styles.table, {
@@ -21,7 +23,7 @@ export function Panel(props: any) {
   return (
     <div className={tableClassnames}>
       <PanelHeader mode={mode} />
-      {orders.map((order: any) => (
+      {orders.map((order: Order) => (
         <PanelEntry
           key={`${order.price}-${mode}`}
           mode={mode}

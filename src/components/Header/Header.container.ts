@@ -6,15 +6,17 @@ import {
   getGroup,
   getGroups,
 } from "../../modules/selectors";
+import { State } from "../../modules/types";
+import { MapDispatch, MapDispatchProps, MapStateProps } from "./Header.types";
 
-const mapState = (state: any): any => ({
+const mapState = (state: State): MapStateProps => ({
   productID: getCurrentProductID(state),
   group: getGroup(state),
   groups: getGroups(state),
 });
 
-const mapDispatch = (dispatch: any) => ({
-  onChangeGroup: (group: any) => dispatch(changeGroup(group)),
+const mapDispatch = (dispatch: MapDispatch): MapDispatchProps => ({
+  onChangeGroup: (group: number) => dispatch(changeGroup(group)),
 });
 
 export default connect(mapState, mapDispatch)(Header);

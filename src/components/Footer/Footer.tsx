@@ -1,7 +1,8 @@
 import classNames from "classnames";
+import { Props } from "./Footer.types";
 import styles from "./Footer.module.scss";
 
-export function Footer(props: any) {
+export function Footer(props: Props) {
   const { onToggleFeed, onKillFeed } = props;
 
   const handleFeed = () => {

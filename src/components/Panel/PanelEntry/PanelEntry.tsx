@@ -1,12 +1,12 @@
 import classnames from "classnames";
-import { PriceMode } from "./PanelEntry.types";
+import { Props } from "./PanelEntry.types";
+import { PriceMode } from "../../../modules/types";
 import styles from "./PanelEntry.module.scss";
-import classNames from "classnames";
 
-export function PanelEntry(props: any) {
+export function PanelEntry(props: Props) {
   const { mode, order, maxTotal } = props;
 
-  const entryWrapperClassnames = classNames(styles.entryWrapper, {
+  const entryWrapperClassnames = classnames(styles.entryWrapper, {
     [styles.entryWrapperBuy]: mode === PriceMode.Buy,
     [styles.entryWrapperSell]: mode === PriceMode.Sell,
   });
@@ -21,11 +21,13 @@ export function PanelEntry(props: any) {
     [styles.backgroundSell]: mode === PriceMode.Sell,
   });
 
-  const backgroundWidth = (order.total / maxTotal) * 100;
+  const backgroundWidth = ((order.total as number) / maxTotal) * 100;
 
   return (
     <div className={entryWrapperClassnames}>
-      <div className={styles.cell}>{order.total.toLocaleString()}</div>
+      <div className={styles.cell}>
+        {(order.total as number).toLocaleString()}
+      </div>
       <div className={styles.cell}>{order.size.toLocaleString()}</div>
       <div className={priceClassnames}>
         {order.price.toFixed(2).toLocaleString()}

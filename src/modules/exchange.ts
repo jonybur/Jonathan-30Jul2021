@@ -1,4 +1,6 @@
-import { eventChannel } from "redux-saga";
+import { END, EventChannel, eventChannel, Subscribe } from "redux-saga";
+import { SimpleEffect, CallEffectDescriptor } from "redux-saga/effects";
+import { CFOrder, HashedOrders, Order } from "./types";
 
 const XBT_PRODUCT_ID = "PI_XBTUSD";
 const ETH_PRODUCT_ID = "PI_ETHUSD";
@@ -109,8 +111,8 @@ function unloadWorker() {
 }
 
 function orderbookChannel() {
-  return eventChannel((emit: any) => {
-    worker.port.addEventListener("message", (payload: any) => {
+  return eventChannel((emit) => {
+    worker.port.addEventListener("message", (payload) => {
       if (payload.data.type === "error") {
         return;
       }
@@ -121,8 +123,8 @@ function orderbookChannel() {
 }
 
 function errorChannel() {
-  return eventChannel((emit: any) => {
-    worker.port.addEventListener("message", (payload: any) => {
+  return eventChannel((emit) => {
+    worker.port.addEventListener("message", (payload) => {
       if (payload.data.type !== "error") {
         return;
       }
@@ -148,13 +150,13 @@ function simulateOrderbookError(productID: string) {
   });
 }
 
-function updateOrders(orders: any, deltaOrders: any) {
+function updateOrders(orders: HashedOrders, deltaOrders: CFOrder[]) {
   if (!deltaOrders) {
     return orders;
   }
 
   const updatedOrders = { ...orders };
-  deltaOrders.forEach((deltaOrder: any) => {
+  deltaOrders.forEach((deltaOrder: CFOrder) => {
     const [price, size] = deltaOrder;
     if (updatedOrders[price] && size === 0) {
       delete updatedOrders[price];
@@ -169,17 +171,17 @@ function updateOrders(orders: any, deltaOrders: any) {
   return updatedOrders;
 }
 
-function generateHashedOrders(orders: any) {
-  const hashedOrders: any = {};
-  orders.forEach((ask: any) => {
-    const [price, size] = ask;
+function generateHashedOrders(orders: CFOrder[]): HashedOrders {
+  const hashedOrders: HashedOrders = {};
+  orders.forEach((order: CFOrder) => {
+    const [price, size] = order;
     hashedOrders[price] = { price, size };
   });
   return hashedOrders;
 }
 
-function generateTotals(orders: any, group: number) {
-  const ordersWithTotal: any = [];
+function generateTotals(orders: Order[], group: number): Order[] {
+  const ordersWithTotal: Order[] = [];
   for (let i = 0; i < orders.length; i++) {
     const currentOrder = orders[i];
     const lastOrder = ordersWithTotal[ordersWithTotal.length - 1];
@@ -195,13 +197,13 @@ function generateTotals(orders: any, group: number) {
     ) {
       ordersWithTotal[ordersWithTotal.length - 1] = {
         ...lastOrder,
-        total: lastOrder.total + currentOrder.size,
+        total: (lastOrder.total as number) + currentOrder.size,
       };
     } else {
       ordersWithTotal[ordersWithTotal.length] = {
         ...currentOrder,
         total: lastOrder
-          ? lastOrder.total + currentOrder.size
+          ? (lastOrder.total as number) + currentOrder.size
           : currentOrder.size,
       };
     }

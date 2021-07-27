@@ -1,10 +1,11 @@
 import styles from "./ErrorToast.module.scss";
+import { Props } from "./ErrorToast.types";
 
-export function ErrorToast(props: any) {
+export function ErrorToast(props: Props) {
   const { onClose, errorMessage } = props;
 
-  const handleCloseError = (event: any) => {
-    onClose(event.target.value);
+  const handleCloseError = () => {
+    onClose();
   };
 
   if (!errorMessage) {

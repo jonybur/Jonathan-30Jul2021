@@ -1,8 +1,12 @@
 import { useRef, useEffect } from "react";
-import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
+import { HashedOrders, Order, PriceMode } from "../modules/types";
 
-function usePrevious(value: any) {
-  const ref = useRef();
+type Fn = () => void;
+type Deps = [...args: any];
+type Callback = (time: number) => void;
+
+function usePrevious(value: Deps) {
+  const ref = useRef<Deps>();
 
   useEffect(() => {
     ref.current = value;
@@ -11,10 +15,10 @@ function usePrevious(value: any) {
   return ref.current;
 }
 
-export function sortOrders(orders: any, mode: PriceMode): any {
+export function sortOrders(orders: HashedOrders, mode: PriceMode): Order[] {
   const ordersArray = Object.values(orders);
 
-  const sortedOrders = ordersArray.sort((a: any, b: any) => {
+  const sortedOrders = ordersArray.sort((a: Order, b: Order) => {
     const sortValue = a.price < b.price ? 1 : -1;
     return mode === PriceMode.Buy ? sortValue : -sortValue;
   });
@@ -22,28 +26,28 @@ export function sortOrders(orders: any, mode: PriceMode): any {
   return sortedOrders;
 }
 
-export const useAnimationFrame = (callback: any) => {
-  const requestRef = useRef();
-  const previousTimeRef = useRef();
+export const useAnimationFrame = (callback: Callback) => {
+  const requestRef = useRef<number>();
+  const previousTimeRef = useRef<number>();
 
-  const animate = (time: any) => {
+  const animate = (time: number) => {
     if (previousTimeRef && !!previousTimeRef.current) {
-      const deltaTime = time - (previousTimeRef as any).current;
+      const deltaTime = time - previousTimeRef.current;
       callback(deltaTime);
     }
     previousTimeRef.current = time;
-    (requestRef as any).current = requestAnimationFrame(animate);
+    requestRef.current = requestAnimationFrame(animate);
   };
 
   useEffect(() => {
-    (requestRef as any).current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame((requestRef as any).current);
+    requestRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestRef.current as number);
   }, []);
 };
 
-export function useEffectAllDepsChange(fn: any, deps: any) {
+export function useEffectAllDepsChange(fn: Fn, deps: Deps) {
   const prevDeps = usePrevious(deps);
-  const changeTarget: any = useRef();
+  const changeTarget = useRef<Deps>();
 
   useEffect(() => {
     if (changeTarget.current === undefined) {
@@ -54,7 +58,7 @@ export function useEffectAllDepsChange(fn: any, deps: any) {
       return fn();
     }
 
-    if (changeTarget.current.every((dep: any, i: any) => dep !== deps[i])) {
+    if (changeTarget.current.every((dep, i) => dep !== deps[i])) {
       changeTarget.current = deps;
 
       return fn();

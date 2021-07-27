@@ -1,10 +1,11 @@
 import styles from "./Header.module.scss";
+import { Props } from "./Header.types";
 
-export function Header(props: any) {
+export function Header(props: Props) {
   const { onChangeGroup, group, groups, productID } = props;
 
-  const handleChange = (event: any) => {
-    onChangeGroup(event.target.value);
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    onChangeGroup(Number(event.target.value));
   };
 
   return (

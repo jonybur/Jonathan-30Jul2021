@@ -1,4 +1,7 @@
-export enum PriceMode {
-  Buy = 0,
-  Sell,
-}
+import { Order, PriceMode } from "../../../modules/types";
+
+export type Props = {
+  mode: PriceMode;
+  order: Order;
+  maxTotal: number;
+};

@@ -9,18 +9,19 @@ import {
   useEffectAllDepsChange,
 } from "./helpers";
 
-import { PriceMode } from "./Panel/PanelEntry/PanelEntry.types";
-import styles from "./Orderbook.module.scss";
+import { Order, PriceMode } from "../modules/types";
 import { generateTotals } from "../modules/exchange";
 import { ErrorToast } from "./ErrorToast";
+import { Props } from "./Orderbook.types";
+import styles from "./Orderbook.module.scss";
 
-export function Orderbook(props: any) {
+export function Orderbook(props: Props) {
   const { asks, bids, error, group } = props;
   const [animationFrame, setAnimationFrame] = useState(0);
 
-  const [memoAsks, setMemoAsks] = useState([]);
-  const [memoBids, setMemoBids] = useState([]);
-  const [maxTotal, setMaxTotal] = useState(0);
+  const [memoAsks, setMemoAsks] = useState<Order[]>([]);
+  const [memoBids, setMemoBids] = useState<Order[]>([]);
+  const [maxTotal, setMaxTotal] = useState<number>(0);
 
   const updateOrders = useCallback(() => {
     const sortedAsks = sortOrders(asks, PriceMode.Buy);
@@ -31,11 +32,11 @@ export function Orderbook(props: any) {
 
     const maxTotalAsks =
       asksWithTotals.length > 0
-        ? asksWithTotals[asksWithTotals.length - 1].total
+        ? (asksWithTotals[asksWithTotals.length - 1].total as number)
         : 0;
     const maxTotalBids =
       bidsWithTotals.length > 0
-        ? bidsWithTotals[bidsWithTotals.length - 1].total
+        ? (bidsWithTotals[bidsWithTotals.length - 1].total as number)
         : 0;
 
     setMemoAsks(asksWithTotals);
@@ -62,7 +63,7 @@ export function Orderbook(props: any) {
         </div>
         <Footer />
       </div>
-      <ErrorToast errorMessage={error} />
+      {error && <ErrorToast errorMessage={error} />}
     </>
   );
 }

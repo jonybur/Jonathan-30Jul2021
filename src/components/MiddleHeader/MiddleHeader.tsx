@@ -1,6 +1,7 @@
 import styles from "./MiddleHeader.module.scss";
+import { Props } from "./MiddleHeader.types";
 
-export function MiddleHeader(props: any) {
+export function MiddleHeader(props: Props) {
   const { group } = props;
 
   return (
