@@ -1,4 +1,4 @@
-(function () {
+export const WorkerScript = `(function () {
   const XBT_PRODUCT_ID = "PI_XBTUSD";
   const ETH_PRODUCT_ID = "PI_ETHUSD";
   let errored = false;
@@ -86,4 +86,4 @@
       port.start();
     }
   );
-})();
+})();`;

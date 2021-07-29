@@ -1,7 +1,6 @@
 import { eventChannel } from "redux-saga";
 import { CFOrder, HashedOrders, Order } from "./types";
-// @ts-ignore
-/* eslint-disable import/no-webpack-loader-syntax */ import WorkerSource from "!!raw-loader!./worker";
+import { WorkerScript } from "./worker";
 
 const XBT_PRODUCT_ID = "PI_XBTUSD";
 const ETH_PRODUCT_ID = "PI_ETHUSD";
@@ -11,7 +10,7 @@ export const XBT_GROUPS = [0.5, 1, 2.5];
 export const ETH_GROUPS = [0.05, 0.1, 0.25];
 let worker: SharedWorker;
 
-const blob = new Blob([WorkerSource]);
+const blob = new Blob([WorkerScript]);
 
 function initExchange() {
   worker = new SharedWorker(URL.createObjectURL(blob));
@@ -50,19 +49,23 @@ function errorChannel() {
 }
 
 function toggleOrderbook(productID: string) {
-  worker.port.postMessage({
-    action: "toggleFeed",
-    value: productID,
-  });
+  if (worker) {
+    worker.port.postMessage({
+      action: "toggleFeed",
+      value: productID,
+    });
+  }
 
   return productID === XBT_PRODUCT_ID ? ETH_PRODUCT_ID : XBT_PRODUCT_ID;
 }
 
 function simulateOrderbookError(productID: string): void {
-  worker.port.postMessage({
-    action: "simulateError",
-    value: productID,
-  });
+  if (worker) {
+    worker.port.postMessage({
+      action: "simulateError",
+      value: productID,
+    });
+  }
 }
 
 function updateOrders(orders: HashedOrders, deltaOrders: CFOrder[]) {

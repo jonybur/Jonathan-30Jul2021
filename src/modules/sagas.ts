@@ -1,3 +1,4 @@
+import { SagaType } from "redux-saga-test-plan";
 import { put, call, take, fork, takeEvery, select } from "redux-saga/effects";
 import {
   receiveOrderbookSnapshot,
@@ -65,6 +66,7 @@ export function* toggleFeed(): Generator | void {
   try {
     const productID = yield select(getCurrentProductID);
     const newProduct = yield call(toggleOrderbook, productID);
+    console.log({ newProduct });
     yield put(toggleFeedSuccess(newProduct));
   } catch (error) {
     yield put(toggleFeedFailure());
