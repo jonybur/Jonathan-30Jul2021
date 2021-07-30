@@ -18,7 +18,6 @@ export const WorkerScript = `(function () {
 
   socket.addEventListener("message", ({ data }) => {
     const dataPackage = JSON.parse(data);
-    console.log({ package: dataPackage });
     connectedPorts.forEach((port) => port.postMessage(dataPackage));
   });
 

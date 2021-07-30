@@ -65,7 +65,6 @@ export function* toggleFeed(): Generator | void {
   try {
     const productID = yield select(getCurrentProductID);
     const newProduct = yield call(toggleOrderbook, productID);
-    console.log({ newProduct });
     yield put(toggleFeedSuccess(newProduct));
   } catch (error) {
     yield put(toggleFeedFailure());
