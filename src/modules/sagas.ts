@@ -1,4 +1,3 @@
-import { SagaType } from "redux-saga-test-plan";
 import { put, call, take, fork, takeEvery, select } from "redux-saga/effects";
 import {
   receiveOrderbookSnapshot,
